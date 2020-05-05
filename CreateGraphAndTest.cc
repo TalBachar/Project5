@@ -1,3 +1,7 @@
+// Tal Bachar
+// HW 5
+// CSCI 33500
+
 #include <iostream>
 #include <fstream>
 #include "graph.h"
@@ -5,88 +9,83 @@
 #include <sstream>
 using namespace std;
 
+
+// function to open file. A friend recommended doing this in a different
+// function instead of inside the code. Must say it looks better and cleaner.
 ifstream openFile(const string filename) {
-   ifstream input;
+   ifstream graph_file;
 
-   // Open input file
-   input.open(filename);
+   graph_file.open(filename);
 
-   // Check for failure to open input file
-   if(input.fail()) {
+   if(graph_file.fail()) {
       cout << "Error: Unable to open file!";
       exit(1);
    }
-
-   return input;
+   return graph_file;
 }
 
-Graph createGraph(const string graph_filename) {
-   // Open graph input file
-   ifstream graphInput = openFile(graph_filename);
+// a function that reads data from file and creates graph
+Graph create_graph(const string graph_filename) {
+   ifstream input_graph = openFile(graph_filename);
 
    int size = 0;
-   int originVertex = 0;
-   int targetVertex = 0;
+   int vertex_source = 0;
+   int vertex_destination = 0;
    float edgeWeight = 0.0;
 
    string line;
-   stringstream sLine;
+   stringstream ss;
 
-   // Read in size and initialize Graph
-   getline(graphInput, line);
-   sLine.str(line);
-   sLine >> size;
-   Graph newGraph(size);
+   getline(input_graph, line);
+   ss.str(line);
+   ss >> size;
+   Graph create_graph(size);
 
-   // Read in directed edges and construct Graph
-   while(getline(graphInput, line)) {
-      sLine.clear();
-      sLine.str(line);
 
-      sLine >> originVertex;
+   while(getline(input_graph, line)) {
+      ss.clear();
+      ss.str(line);
 
-      while(sLine >> targetVertex) {
-         sLine >> edgeWeight;
+      ss >> vertex_source;
 
-         newGraph.addEdge(originVertex, targetVertex, edgeWeight);
+      while(ss >> vertex_destination) {
+         ss >> edgeWeight;
+
+         create_graph.addEdge(vertex_source, vertex_destination, edgeWeight);
       }
    }
 
-   //Close file
-   graphInput.close();
+   input_graph.close();
 
-   return newGraph;
+   return create_graph;
 }
 
+//
 void queryGraph(const string query_filename, Graph & testGraph) {
-   // Open query file
+
    ifstream queryInput = openFile(query_filename);
 
-   int originVertex = 0;
-   int targetVertex = 0;
+   int vertex_source = 0;
+   int vertex_destination = 0;
    float edgeWeight = 0.0;
    string line;
-   stringstream sLine;
+   stringstream ss;
 
    // For each edge query, check if edge exists between the origin and "target"
    // vertices.
    while(getline(queryInput, line)) {
-      sLine.clear();
-      sLine.str(line);
+      ss.clear();
+      ss.str(line);
 
-      sLine >> originVertex >> targetVertex;
+      ss >> vertex_source >> vertex_destination;
 
-      edgeWeight = testGraph.isConnected(originVertex, targetVertex);
+      edgeWeight = testGraph.isConnected(vertex_source, vertex_destination);
 
-      // if(originVertex == targetVertex) {
-      //    cout << originVertex << " " << targetVertex
-      //    << ": Same vertex - implicit weight of 0";
-      // }
-      if (edgeWeight != -1.0) {
-         cout << originVertex << " " << targetVertex << ": connected " << edgeWeight;
+      if (edgeWeight != -1.0) {  // if weight isn't sentinel, print connected and weight
+         cout << vertex_source << " " << vertex_destination << ": connected " << edgeWeight;
       }
-      else {
-         cout << originVertex << " " << targetVertex << ": not_connected";
+      else {   //otherwise, print not_connected
+         cout << vertex_source << " " << vertex_destination << ": not_connected";
       }
       cout << endl;
    }
@@ -100,8 +99,8 @@ int graphTestDriver(int argc, char **argv) {
    const string graph_filename(argv[1]);
    const string query_filename(argv[2]);
 
-   Graph testGraph = createGraph(graph_filename);
-   queryGraph(query_filename, testGraph);
+   Graph testGraph = create_graph(graph_filename); //create the Graph
+   queryGraph(query_filename, testGraph); // query the graph
 
 
     return 0;

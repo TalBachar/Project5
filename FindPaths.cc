@@ -1,3 +1,7 @@
+// Tal Bachar
+// HW 5
+// CSCI 33500
+
 #include <iostream>
 #include <fstream>
 #include "graph.h"
@@ -8,10 +12,8 @@ using namespace std;
 ifstream openFile(const string filename) {
    ifstream input;
 
-   // Open input file
    input.open(filename);
 
-   // Check for failure to open input file
    if(input.fail()) {
       cout << "Error: Unable to open file!";
       exit(1);
@@ -25,37 +27,37 @@ Graph createGraph(const string graph_filename) {
    ifstream graphInput = openFile(graph_filename);
 
    int size = 0;
-   int originVertex = 0;
-   int targetVertex = 0;
+   int vertex_source = 0;
+   int vertex_destination = 0;
    float edgeWeight = 0.0;
 
    string line;
-   stringstream sLine;
+   stringstream ss;
 
    // Read in size and initialize Graph
    getline(graphInput, line);
-   sLine.str(line);
-   sLine >> size;
-   Graph newGraph(size);
+   ss.str(line);
+   ss >> size;
+   Graph graph(size);
 
    // Read in directed edges and construct Graph
    while(getline(graphInput, line)) {
-      sLine.clear();
-      sLine.str(line);
+      ss.clear();
+      ss.str(line);
 
-      sLine >> originVertex;
+      ss >> vertex_source;
 
-      while(sLine >> targetVertex) {
-         sLine >> edgeWeight;
+      while(ss >> vertex_destination) {
+         ss >> edgeWeight;
 
-         newGraph.addEdge(originVertex, targetVertex, edgeWeight);
+         graph.new_edge(vertex_source, vertex_destination, edgeWeight);
       }
    }
 
    //Close file
    graphInput.close();
 
-   return newGraph;
+   return graph;
 }
 
 int pathfindDriver(int argc, char **argv) {

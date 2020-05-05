@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 #include <list>
-#include <limits.h>
-#include <iomanip>
 #include "binary_heap.h"
 using namespace std;
 
@@ -18,27 +16,15 @@ class Graph {
    public:
 
    // Constructor
-   // @size Number of vertices to be created in the Graph.
    Graph(const int size = 10) :
       graph_vertices_(size), number_of_vertices_{size} {
-
-   // Set all proper/intuitive identities (NOT counting src 0).
-      for(int i = 0; i < size; i++) {
-         graph_vertices_[i] = Vertex(i+1);
-      }
+         for(int i = 0; i < size; i++) {
+            graph_vertices_[i] = Vertex(i+1);
+         }
    }
 
-   // Add a directed edge between two vertices.
-   // @src Identity (integer) of the origin vertex.
-   // @dest Identity (integer) of the target vertex.
-   // weight A non-negative weight (float) for the new edge.
-   // Pre-Conditions: src and to represent valid vertex identities
-   // (integers) and the edge weight is non-negative. No
-   // edge already exists between the origin and target
-   // vertices. All of these pre-conditions are checked.
-   // Post-Conditions: If no edge already exists, origin vertex has been
-   // updated with edge information: target and weight.
-   void addEdge(int src, int dest, float weight) {
+   // add an edge between vetrices
+   void new_edge(int src, int dest, float weight) {
 
 
       // Add edge properties to origin vertex - target and weight.
@@ -47,44 +33,33 @@ class Graph {
 
    }
 
-   // Check for existing edge/connection between two vertices.
-   // @src Identity (integer) of origin vertex.
-   // @dest Identity (integer) of target vertex.
-   // @return Weight (float) of existing edge; else sentinel value
-   // of -1.0 to signal no existing edge.
-   // Pre-Condition: src and to are valid vertex identities (integers).
-   // This is checked in the function.
+
+   //check if two vertices are connected
+   //return weight if yes, return -1 if no.
    float isConnected(const int src, const int dest) {
       float weight = -1.0;
 
 
-      auto it = graph_vertices_[src - 1].adjacent_vertices_.begin();
-      auto it2 = graph_vertices_[src - 1].edge_weights_.begin();
+      auto first = graph_vertices_[src - 1].adjacent_vertices_.begin();
+      auto second = graph_vertices_[src - 1].edge_weights_.begin();
 
-      while(it != graph_vertices_[src - 1].adjacent_vertices_.end()) {
-         if((*it)->identity_ == dest) {
-            weight = *it2;
+      while(first != graph_vertices_[src - 1].adjacent_vertices_.end()) {
+         if((*first)->identity_ == dest) {
+            weight = *second;
             break;
          }
 
-         it++;
-         it2++;
+         first++;
+         second++;
       }
 
 
       return weight;
    }
 
-   // Public function for running Dijkstra's algorithm on the Graph, given an
-   // origin vertex, and outputting all path information.
-   // @src Identity (integer) of an origin vertex upon which to
-   // orient Dijkstra's algorithm.
-   // Pre-Conditions: The Graph has been properly initialized and src
-   // a valid vertex identity (integer) - this function
-   // checks this pre-condition.
-   // Post-Conditions: Dijkstra's algorithm has been executed and all path
-   // information (path src origin to each other reachable
-   // vertex and cost/distance) has been output.
+
+   //public dijkstra algorithm. given a vertex, diksta will return cost
+   //if not possible, return not_possible.
    void dijkstra(const int src) {
 
       // Check valid input
@@ -94,7 +69,7 @@ class Graph {
       }
 
       // Execute Dijkstra's algorithm.
-      dijkstraAlgorithm(src);
+      dijkstra_algo(src);
 
       // Output results
       for(int i = 0; i < number_of_vertices_; i++) {
@@ -171,7 +146,7 @@ class Graph {
    // accurately reflect distance src the origin vertex,
    // and a pointer in each vertex to the prior vertex on the
    // path src the origin to the given vertex.
-   void dijkstraAlgorithm(const int src) {
+   void dijkstra_algo(const int src) {
 
       // Create Queue and initialize all vertices to unknown and "infinity"
       // distance.
