@@ -6,6 +6,7 @@
 #define STUDENT_GRAPH
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <list>
 #include <limits.h>
@@ -38,18 +39,7 @@ class Graph {
    // Post-Conditions: If no edge already exists, origin vertex has been
    // updated with edge information: target and weight.
    void addEdge(int src, int dest, float weight) {
-      // Check valid input
-      if(!isValidVertex(src) || !isValidVertex(dest) || weight < 0.0) {
-         cout << "Invalid input! Please provide vertex selections between "
-         << "1 and " << number_of_vertices_ << " and positive edge "
-         << "edge weight." << endl << endl;
-         return;
-      }
 
-      // Check if an edge already exists
-      if(isConnected(src, dest) != -1.0 || src == dest) {
-         return;
-      }
 
       // Add edge properties to origin vertex - target and weight.
       graph_vertices_[src - 1].adjacent_vertices_.push_back(&(graph_vertices_[dest-1]));
@@ -67,12 +57,6 @@ class Graph {
    float isConnected(const int src, const int dest) {
       float weight = -1.0;
 
-      // Check valid input
-      if(!isValidVertex(src) || !isValidVertex(dest)) {
-         cout << "Invalid vertex selections! Please provide selections "
-            << "between 1 and " << number_of_vertices_ << endl << endl;
-         return weight;
-      }
 
       auto it = graph_vertices_[src - 1].adjacent_vertices_.begin();
       auto it2 = graph_vertices_[src - 1].edge_weights_.begin();
@@ -105,8 +89,7 @@ class Graph {
 
       // Check valid input
       if(!isValidVertex(src)){
-         cout << "Invalid vertex selection! Please provide a selection "
-         << "between 1 and " << number_of_vertices_ << endl << endl;
+         cout << "Error! no such vertex!";
          return;
       }
 
@@ -115,54 +98,19 @@ class Graph {
 
       // Output results
       for(int i = 0; i < number_of_vertices_; i++) {
-         cout << graph_vertices_[i].identity_ << ": ";
-         printPath(graph_vertices_[i]);
-         cout << ", Cost: " << fixed << setprecision(1) << graph_vertices_[i].distance_ << endl;
+         if (graph_vertices_[i].distance_ == 2147483648.0) {
+            cout << graph_vertices_[i].identity_ << ": ";
+            cout << "not_possible" << endl;
+         }
+         else {
+            cout << graph_vertices_[i].identity_ << ": ";
+            printPath(graph_vertices_[i]);
+               cout << " cost: " << fixed << setprecision(1) << graph_vertices_[i].distance_ << endl;
+         }
       }
    }
 
-   // Utility for printing degree information of Graph instance: number of
-   // edges, smallest degree, largest degree, and average degree.
-   // Post-Condition: All degree information of the Graph instance has been
-   // output.
-   void outputDegreeInformation() {
 
-      // Check if Graph is empty
-      if(number_of_vertices_ == 0) {
-         cout << "Graph is empty." << endl;
-         return;
-      }
-
-      int totalDegrees(0), largestDegree(0), smallestDegree(number_of_vertices_ - 1);
-
-      // For each Vertex in the Graph...
-      for(int i = 0; i < number_of_vertices_; i++) {
-         int currentDegree = static_cast<int>(graph_vertices_[i].adjacent_vertices_.size());
-
-         // Update total degree of Graph
-         totalDegrees += currentDegree;
-
-         // Update largest degree, if applicable
-         if(currentDegree > largestDegree) {
-            largestDegree = currentDegree;
-         }
-
-         // Update smallest degree, if applicable
-         if(currentDegree < smallestDegree) {
-            smallestDegree = currentDegree;
-         }
-      }
-
-      // Calculate number of edges and average degree
-      int numberOfEdges = (totalDegrees / 2);
-      float avgDegree = (totalDegrees / number_of_vertices_);
-
-      cout << "Number of Edges: " << numberOfEdges << endl;
-      cout << "Smallest Degree: " << smallestDegree << endl;
-      cout << "Largest Degree: " << largestDegree << endl;
-      cout << "Average Degree: " << setprecision(1) << avgDegree << endl << endl;
-
-   }
 
    private:
 
@@ -243,6 +191,7 @@ class Graph {
          bool success = false;
          int identity = 0; // Selected vertex identity.
 
+
          // While the queue is not empty and still dequeueing known vertex
          // duplicate representatives, continue to dequeue.
          while(!queue.isEmpty() && !success) {
@@ -302,7 +251,7 @@ class Graph {
       void printPath(Vertex &v) {
          if(v.previous_vertex_ != nullptr) {
             printPath(*(v.previous_vertex_));
-            cout << ", ";
+            cout << " ";
          }
          cout << v.identity_;
       }
